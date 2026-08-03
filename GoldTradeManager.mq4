@@ -54,6 +54,7 @@ input bool    VerboseLog      = true;                // Print actions to log
 //=== Globals ========================================================
 double g_stopLevel   = 0;    // broker min distance for SL/TP (price units)
 double g_freezeLevel = 0;    // broker freeze distance (price units)
+datetime g_lastTradeWarn = 0;
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -341,6 +342,17 @@ void ApplyPartialClose()
 //+------------------------------------------------------------------+
 void ManageAllOrders()
 {
+   if(!IsTradeAllowed())
+   {
+      if(TimeCurrent() - g_lastTradeWarn >= 60)
+      {
+         g_lastTradeWarn = TimeCurrent();
+         Print("WARNING: trading not allowed. ",
+               "Check 'Allow live trading' and the AutoTrading button.");
+      }
+      return;
+   }
+
    RefreshBrokerLimits();
 
    for(int i = OrdersTotal() - 1; i >= 0; i--)
