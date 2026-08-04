@@ -124,8 +124,12 @@ Forward tested on a live demo feed during the London/New York overlap. Test para
 | 1 | sell | 4034.44 | 4034.24 | 4034.24 | +0.20 | Breakeven |
 | 2 | sell | 4034.36 | 4034.16 | 4034.16 | +0.20 | Breakeven |
 | 3 | sell | 4030.65 | 4023.20 | 4023.20 | +7.45 | Trailing |
+| 4 | buy | 4064.01 | 4064.21 | 4064.21 | +0.20 | Breakeven |
+| 5 | buy | 4063.29 | 4067.70 | — | — | Trailing |
 
-Breakeven placed the stop at entry minus the configured 20-point offset, exact to the tick, on both trades. On trade 3 the trailing stop advanced the stop through roughly 800 points as price fell, then closed the position when price retraced.
+Breakeven placed the stop at entry plus or minus the configured 20-point offset, exact to the tick, on every trade. On trade 3 the trailing stop advanced the stop through roughly 800 points as price fell, then closed the position when price retraced. On trade 5 it advanced upward through roughly 440 points as price rose.
+
+Both directions were confirmed on a live demo feed: on the long side the stop moved to entry plus the offset and then advanced upward; on the short side it mirrored downward. Stops never moved away from profit in either direction.
 
 ![Trailing stop advancing](docs/trailing-log.png)
 
@@ -143,8 +147,8 @@ The highlighted `S/L` column marks stops that were changed after the order was o
 
 ### Known gaps
 
-- Long-side breakeven and trailing use the mirrored code path but have not yet been confirmed on a live feed
 - Partial close has not been forward tested
+- Under fast movement the trailing stop can issue several modifications within the same second once price clears `Trail_StepPts`, since the threshold is distance-based only. A minimum interval between modifications is planned
 
 ### How to test it yourself
 
